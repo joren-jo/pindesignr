@@ -175,8 +175,14 @@ textarea{resize:vertical;min-height:75px}
 </head>
 <body>
 
-<!-- AUTH MODAL -->
-<div class="auth-overlay" id="authOverlay">
+<!-- PAGE BLOCK (shown until auth confirmed) -->
+<div id="pageBlock" style="position:fixed;inset:0;background:white;z-index:998;display:flex;align-items:center;justify-content:center">
+  <div style="text-align:center">
+    <div style="font-family:'Playfair Display',serif;font-size:28px;color:var(--navy);margin-bottom:8px">Pin<span style="color:var(--red)">designr</span></div>
+    <div style="font-size:13px;color:var(--gray-500)">Loading…</div>
+  </div>
+</div>
+<div class="auth-overlay hidden" id="authOverlay">
   <div class="auth-modal">
     <div style="margin-bottom:6px">
       <div class="auth-logo">Pin<span>designr</span></div>
@@ -456,16 +462,20 @@ let currentUser = null;
 async function initSupabase() {
   try {
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    // get anon key from our proxy
     const r = await fetch('/api/config');
     const cfg = await r.json();
     supabase = createClient(SUPA_URL, cfg.supabaseKey);
 
     const { data: { session } } = await supabase.auth.getSession();
+
+    // hide loading screen
+    document.getElementById('pageBlock').style.display = 'none';
+
     if (session?.user) {
       currentUser = session.user;
       onSignedIn(session.user);
     } else {
+      // no session — show auth modal
       document.getElementById('authOverlay').classList.remove('hidden');
       renderUserPill(null);
     }
@@ -476,12 +486,15 @@ async function initSupabase() {
         onSignedIn(session.user);
       } else {
         currentUser = null;
+        document.getElementById('authOverlay').classList.remove('hidden');
         renderUserPill(null);
       }
     });
   } catch(e) {
-    console.warn('Supabase init failed, running in local mode:', e.message);
-    document.getElementById('authOverlay').classList.add('hidden');
+    console.warn('Supabase init failed:', e.message);
+    // on error — still hide loader and show auth
+    document.getElementById('pageBlock').style.display = 'none';
+    document.getElementById('authOverlay').classList.remove('hidden');
     renderUserPill(null);
   }
 }
