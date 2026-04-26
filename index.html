@@ -178,7 +178,9 @@ textarea{resize:vertical;min-height:75px}
 <!-- AUTH MODAL -->
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-modal">
-    <div class="auth-logo">Pin<span>designr</span></div>
+    <div style="margin-bottom:6px">
+      <div class="auth-logo">Pin<span>designr</span></div>
+    </div>
     <div class="auth-subtitle">Sign in to save your brand profile and generation history.</div>
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
@@ -488,12 +490,20 @@ async function onSignedIn(user) {
   document.getElementById('authOverlay').classList.add('hidden');
   renderUserPill(user);
   await loadProfile(user.id);
+  usageCount = await getUsageCount();
+  // show usage in nav
+  const wrap = document.getElementById('userPillWrap');
+  const badge = document.createElement('span');
+  badge.className = 'usage-badge';
+  badge.style.cssText = 'font-size:11px;color:var(--gray-500);margin-left:6px';
+  badge.textContent = `${usageCount}/${FREE_TIER_LIMIT} generations`;
+  wrap.appendChild(badge);
 }
 
 function renderUserPill(user) {
   const wrap = document.getElementById('userPillWrap');
   if (!user) {
-    wrap.innerHTML = `<button class="user-pill" onclick="document.getElementById('authOverlay').classList.remove('hidden')">Sign In</button>`;
+    wrap.innerHTML = `<button class="btn-primary" style="padding:7px 16px;font-size:13px" onclick="document.getElementById('authOverlay').classList.remove('hidden')">Log In</button>`;
     return;
   }
   const initials = (user.email||'U').slice(0,1).toUpperCase();
@@ -611,6 +621,78 @@ async function saveProfileToSupabase(profile) {
 
 // init on load
 initSupabase();
+
+// ── USAGE & TIER GATING ──
+const FREE_TIER_LIMIT = 1; // 1 free generation
+let usageCount = 0;
+
+async function getUsageCount() {
+  if (!supabase || !currentUser) return 0;
+  try {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1); startOfMonth.setHours(0,0,0,0);
+    const { count } = await supabase
+      .from('generations')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id)
+      .gte('created_at', startOfMonth.toISOString());
+    return count || 0;
+  } catch { return 0; }
+}
+
+async function checkCanGenerate() {
+  if (!currentUser) {
+    document.getElementById('authOverlay').classList.remove('hidden');
+    return false;
+  }
+  usageCount = await getUsageCount();
+  // TODO: check Stripe subscription tier — for now free tier = 1 generation
+  const userTier = 'free'; // will be replaced by Stripe lookup
+  const limit = userTier === 'free' ? FREE_TIER_LIMIT : 99999;
+  if (usageCount >= limit) {
+    showPaywall(usageCount, limit);
+    return false;
+  }
+  return true;
+}
+
+async function trackGeneration() {
+  if (!supabase || !currentUser) return;
+  try {
+    await supabase.from('generations').insert({
+      user_id: currentUser.id,
+      variants: [],
+      funnel_stages: files.flatMap(f => f.funnels)
+    });
+  } catch {}
+}
+
+function showPaywall(used, limit) {
+  const existing = document.getElementById('paywallModal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'paywallModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+  modal.innerHTML = `
+    <div style="background:white;border-radius:16px;padding:40px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center">
+      <div style="font-size:36px;margin-bottom:16px">🚀</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);margin-bottom:8px">You've used your free generation</div>
+      <div style="font-size:13px;color:var(--gray-700);margin-bottom:28px;line-height:1.6">Upgrade to keep generating Pinterest creatives and unlock keyword research, unlimited images, and more.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <div style="border:1.5px solid var(--gray-200);border-radius:10px;padding:16px;text-align:left">
+          <div style="font-weight:600;color:var(--navy);margin-bottom:4px">Pro — €29/mo</div>
+          <div style="font-size:12px;color:var(--gray-700)">50 generations/month · Keyword research · Brand profile saved</div>
+        </div>
+        <div style="border:1.5px solid var(--red);border-radius:10px;padding:16px;text-align:left;background:var(--red-light)">
+          <div style="font-weight:600;color:var(--red);margin-bottom:4px">Agency — €99/mo <span style="font-size:11px;background:var(--red);color:white;padding:2px 7px;border-radius:4px;margin-left:4px">POPULAR</span></div>
+          <div style="font-size:12px;color:var(--gray-700)">Unlimited generations · 5 brand profiles · Priority support</div>
+        </div>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:10px" onclick="window.location.href='#pricing'">Upgrade Now →</button>
+      <div style="font-size:12px;color:var(--gray-500)">Already subscribed? <span style="color:var(--navy);cursor:pointer;text-decoration:underline" onclick="document.getElementById('paywallModal').remove()">Refresh your session</span></div>
+    </div>`;
+  document.body.appendChild(modal);
+}
 function syncColor(colorId, hexId) {
   const hex = document.getElementById(hexId).value;
   if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
@@ -1017,6 +1099,11 @@ async function callClaude(messages, system, max = 1200) {
 // ── GENERATE CREATIVES ──
 async function generateCreatives() {
   hideErr('errorBar');
+
+  // gate: must be signed in + within tier limit
+  const canGenerate = await checkCanGenerate();
+  if (!canGenerate) return;
+
   const profile = getProfile();
   const goal = profile.campaignGoal;
   const funnels = files.map(f => f.funnels).flat();
@@ -1145,9 +1232,14 @@ Return ONLY JSON array of exactly 5:
   hideStat('statusBar');
   btn.disabled = false;
   document.getElementById('chatBar').style.display = 'block';
-}
-
-function renderCreatives(imgUrl, idx, variants, profile) {
+  await trackGeneration();
+  // show usage count in nav
+  usageCount++;
+  const tier = 'free';
+  const limit = tier === 'free' ? FREE_TIER_LIMIT : 99999;
+  const wrap = document.getElementById('userPillWrap');
+  const badge = wrap?.querySelector('.usage-badge');
+  if (badge) badge.textContent = `${usageCount}/${limit} generations`;(imgUrl, idx, variants, profile) {
   const results = document.getElementById('results');
   if (!results.querySelector('.results-header')) {
     results.innerHTML = '<div class="results-header">Generated Creatives</div>';
