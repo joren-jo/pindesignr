@@ -460,6 +460,12 @@ let supabase = null;
 let currentUser = null;
 
 async function initSupabase() {
+  // safety timeout — never hang on loading screen more than 5s
+  const timeout = setTimeout(() => {
+    document.getElementById('pageBlock').style.display = 'none';
+    document.getElementById('authOverlay').classList.remove('hidden');
+  }, 5000);
+
   try {
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     const r = await fetch('/api/config');
@@ -468,14 +474,13 @@ async function initSupabase() {
 
     const { data: { session } } = await supabase.auth.getSession();
 
-    // hide loading screen
+    clearTimeout(timeout);
     document.getElementById('pageBlock').style.display = 'none';
 
     if (session?.user) {
       currentUser = session.user;
       onSignedIn(session.user);
     } else {
-      // no session — show auth modal
       document.getElementById('authOverlay').classList.remove('hidden');
       renderUserPill(null);
     }
@@ -491,8 +496,8 @@ async function initSupabase() {
       }
     });
   } catch(e) {
+    clearTimeout(timeout);
     console.warn('Supabase init failed:', e.message);
-    // on error — still hide loader and show auth
     document.getElementById('pageBlock').style.display = 'none';
     document.getElementById('authOverlay').classList.remove('hidden');
     renderUserPill(null);
