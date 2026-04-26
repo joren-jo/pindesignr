@@ -1232,38 +1232,16 @@ Return ONLY JSON array of exactly 5:
   hideStat('statusBar');
   btn.disabled = false;
   document.getElementById('chatBar').style.display = 'block';
-}
-
-    try {
-      const res = await fetch('/api/claude', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          model:'claude-sonnet-4-20250514', max_tokens:1200,
-          messages:[{role:'user',content:[
-            {type:'image',source:{type:'base64',media_type:mt,data:b64}},
-            {type:'text',text:prompt}
-          ]}]
-        })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-      const variants = parseJ(data.content.map(c => c.text||'').join(''));
-      renderCreatives(item.url, i, variants, brandDisplay);
-    } catch(e) { showErr('errorBar',`Error on image ${i+1}: ${e.message}`); }
-  }
-
-  setProg(100);
-  hideStat('statusBar');
-  btn.disabled = false;
-  document.getElementById('chatBar').style.display = 'block';
   await trackGeneration();
-  // show usage count in nav
   usageCount++;
   const tier = 'free';
   const limit = tier === 'free' ? FREE_TIER_LIMIT : 99999;
-  const wrap = document.getElementById('userPillWrap');
-  const badge = wrap?.querySelector('.usage-badge');
-  if (badge) badge.textContent = `${usageCount}/${limit} generations`;(imgUrl, idx, variants, profile) {
+  const wrap2 = document.getElementById('userPillWrap');
+  const badge2 = wrap2?.querySelector('.usage-badge');
+  if (badge2) badge2.textContent = `${usageCount}/${limit} generations`;
+}
+
+function renderCreatives(imgUrl, idx, variants, profile) {
   const results = document.getElementById('results');
   if (!results.querySelector('.results-header')) {
     results.innerHTML = '<div class="results-header">Generated Creatives</div>';
