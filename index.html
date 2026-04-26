@@ -608,7 +608,7 @@ function setProg(p) { const b = document.getElementById('progressBar'); if(b) b.
 async function callClaude(messages, system, max = 1200) {
   const body = { model:'claude-sonnet-4-20250514', max_tokens: max, messages };
   if (system) body.system = system;
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
+  const r = await fetch('/api/claude', {
     method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
   });
   const d = await r.json();
@@ -638,7 +638,7 @@ async function generateCreatives() {
     setStat('statusBar', tr.status_fetch);
     setProg(10);
     try {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
+      const r = await fetch('/api/claude', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           model:'claude-sonnet-4-20250514', max_tokens:600,
@@ -699,7 +699,7 @@ Return ONLY JSON array of exactly 5:
 [{"variant":"Variant 1 — angle","funnel":"upper|mid|lower","headline":"Short headline in ${pinLang}","subtext":"One benefit sentence in ${pinLang}.","cta":"CTA text in ${pinLang}","full_copy":"Full caption 2-3 sentences in ${pinLang}."}]`;
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch('/api/claude', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           model:'claude-sonnet-4-20250514', max_tokens:1200,
@@ -942,7 +942,7 @@ async function generateKeywords() {
   let brandInfo = '';
   if (url) {
     try {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
+      const r = await fetch('/api/claude', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           model:'claude-sonnet-4-20250514', max_tokens:600,
