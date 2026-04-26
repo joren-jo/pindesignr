@@ -457,7 +457,7 @@ let logoDataUrl = null;
 const SUPA_URL = 'https://urblsnrutcbfafwojsti.supabase.co';
 const SUPA_KEY = typeof process !== 'undefined' ? process.env?.SUPABASE_ANON_KEY : null;
 
-let supabase = null;
+let supabaseClient = null;
 let currentUser = null;
 
 async function initSupabase() {
@@ -485,9 +485,9 @@ async function initSupabase() {
   try {
     const r = await fetch('/api/config');
     const cfg = await r.json();
-    supabase = window.supabase.createClient(SUPA_URL, cfg.supabaseKey);
+    supabaseClient = window.supabase.createClient(SUPA_URL, cfg.supabaseKey);
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
 
     clearTimeout(timeout);
     document.getElementById('pageBlock').style.display = 'none';
@@ -500,7 +500,7 @@ async function initSupabase() {
       renderUserPill(null);
     }
 
-    supabase.auth.onAuthStateChange((_event, session) => {
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         currentUser = session.user;
         onSignedIn(session.user);
@@ -574,46 +574,46 @@ function switchAuthTab(tab) {
 }
 
 async function signIn() {
-  if (!supabase) return;
+  if (!supabaseClient) return;
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
   const errEl = document.getElementById('authErr');
   errEl.classList.remove('show');
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) { errEl.textContent = error.message; errEl.classList.add('show'); }
 }
 
 async function signUp() {
-  if (!supabase) return;
+  if (!supabaseClient) return;
   const email = document.getElementById('signupEmail').value.trim();
   const password = document.getElementById('signupPassword').value;
   const errEl = document.getElementById('authErr');
   const succEl = document.getElementById('authSuccess');
   errEl.classList.remove('show');
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { error } = await supabaseClient.auth.signUp({ email, password });
   if (error) { errEl.textContent = error.message; errEl.classList.add('show'); }
   else { succEl.textContent = 'Account created! Check your email to confirm.'; succEl.classList.add('show'); }
 }
 
 async function signOut() {
-  if (supabase) await supabase.auth.signOut();
+  if (supabaseClient) await supabaseClient.auth.signOut();
   document.getElementById('authOverlay').classList.remove('hidden');
 }
 
 async function showForgot() {
-  if (!supabase) return;
+  if (!supabaseClient) return;
   const email = document.getElementById('loginEmail').value.trim();
   if (!email) { document.getElementById('authErr').textContent = 'Enter your email first.'; document.getElementById('authErr').classList.add('show'); return; }
-  await supabase.auth.resetPasswordForEmail(email);
+  await supabaseClient.auth.resetPasswordForEmail(email);
   document.getElementById('authSuccess').textContent = 'Password reset email sent.';
   document.getElementById('authSuccess').classList.add('show');
 }
 
 // ── PROFILE SYNC WITH SUPABASE ──
 async function loadProfile(userId) {
-  if (!supabase) return;
+  if (!supabaseClient) return;
   try {
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
     if (data) {
       populateProfileFields(data);
       if (data.logo_data_url) { logoDataUrl = data.logo_data_url; document.getElementById('logoPreviewWrap').innerHTML = `<img src="${logoDataUrl}" style="width:68px;height:68px;object-fit:contain;border-radius:6px;padding:4px">`; }
@@ -640,8 +640,8 @@ function populateProfileFields(p) {
 }
 
 async function saveProfileToSupabase(profile) {
-  if (!supabase || !currentUser) return;
-  await supabase.from('profiles').upsert({
+  if (!supabaseClient || !currentUser) return;
+  await supabaseClient.from('profiles').upsert({
     id: currentUser.id,
     brand_name: profile.brandName, brand_url: profile.brandUrl,
     brand_niche: profile.brandNiche, brand_audience: profile.brandAudience,
@@ -660,7 +660,7 @@ const FREE_TIER_LIMIT = 1; // 1 free generation
 let usageCount = 0;
 
 async function getUsageCount() {
-  if (!supabase || !currentUser) return 0;
+  if (!supabaseClient || !currentUser) return 0;
   try {
     const startOfMonth = new Date();
     startOfMonth.setDate(1); startOfMonth.setHours(0,0,0,0);
@@ -690,9 +690,9 @@ async function checkCanGenerate() {
 }
 
 async function trackGeneration() {
-  if (!supabase || !currentUser) return;
+  if (!supabaseClient || !currentUser) return;
   try {
-    await supabase.from('generations').insert({
+    await supabaseClient.from('generations').insert({
       user_id: currentUser.id,
       variants: [],
       funnel_stages: files.flatMap(f => f.funnels)
