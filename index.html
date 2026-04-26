@@ -87,14 +87,9 @@ textarea{resize:vertical;min-height:75px}
 .mockup-bg{width:100%;height:100%;object-fit:cover;opacity:.42}
 .mockup-overlay{position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,transparent 40%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.75) 100%)}
 .mockup-top{display:flex;justify-content:space-between;align-items:flex-start}
-.brand-pill{background:rgba(255,255,255,.93);color:var(--navy);font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;letter-spacing:.02em;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.funnel-pill{font-size:9px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:.06em;text-transform:uppercase}
-.f-upper{background:rgba(29,53,87,.85);color:#b8d0e8}
-.f-mid{background:rgba(42,74,115,.85);color:#c8daee}
-.f-lower{background:rgba(230,57,70,.85);color:#ffd0d3}
-.mockup-headline{font-family:'Playfair Display',serif;font-size:15px;font-weight:400;color:white;line-height:1.25;margin-bottom:6px;text-shadow:0 1px 6px rgba(0,0,0,.7)}
-.mockup-sub{font-size:10px;color:rgba(255,255,255,.8);line-height:1.4;margin-bottom:9px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
-.mockup-cta{display:inline-block;background:var(--red);color:white;font-size:10px;font-weight:700;padding:5px 12px;border-radius:100px;letter-spacing:.04em}
+.logo-topleft{max-width:110px}
+.mockup-copy{font-size:14px;font-weight:500;color:white;line-height:1.35;margin-bottom:10px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+.mockup-cta{display:inline-block;color:white;font-size:11px;font-weight:700;padding:6px 14px;border-radius:100px;letter-spacing:.04em}
 .card-meta{padding:12px 14px;border-top:1px solid var(--gray-100)}
 .meta-label{font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
 .meta-copy{font-size:12px;color:var(--gray-700);line-height:1.5}
@@ -138,6 +133,16 @@ textarea{resize:vertical;min-height:75px}
 .seed-pin{font-size:11px;color:var(--gray-700);padding:3px 0;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
 .seed-pin::before{content:'→';color:var(--red);flex-shrink:0;font-size:10px;margin-top:1px}
 .divider{height:1px;background:var(--gray-200);margin:10px 0}
+
+/* brand profile */
+.logo-upload-row{display:flex;align-items:center;gap:14px}
+.logo-drop{width:80px;height:80px;border:1.5px dashed var(--gray-300);border-radius:10px;background:var(--gray-50);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+.logo-drop:hover{border-color:var(--red);background:var(--red-light)}
+.logo-drop img{width:100%;height:100%;object-fit:contain;border-radius:8px;padding:4px}
+.color-input-row{display:flex;align-items:center;gap:8px}
+.color-swatch{width:36px;height:36px;border:1px solid var(--gray-300);border-radius:6px;cursor:pointer;padding:2px;background:none;flex-shrink:0}
+.color-swatch::-webkit-color-swatch-wrapper{padding:0;border-radius:4px}
+.color-swatch::-webkit-color-swatch{border:none;border-radius:4px}
 </style>
 </head>
 <body>
@@ -180,9 +185,106 @@ textarea{resize:vertical;min-height:75px}
 <!-- ══ CREATIVES ══ -->
 <div class="page active" id="page-creatives">
 
+  <!-- STEP 1: Brand Profile -->
   <div class="card">
     <div class="section-label">
       <div class="step-num">1</div>
+      <div class="section-title">Brand Profile</div>
+    </div>
+    <p style="font-size:13px;color:var(--gray-700);margin-bottom:18px;line-height:1.6">Set up your brand once — these settings are saved and pre-fill every session.</p>
+
+    <div class="row" style="margin-bottom:16px">
+      <div class="field">
+        <label>Brand Name</label>
+        <input type="text" id="brandName" placeholder="e.g. Kalista Parfums">
+      </div>
+      <div class="field">
+        <label>Website URL <span style="color:var(--gray-500);font-weight:400;text-transform:none">(optional)</span></label>
+        <input type="url" id="brandUrl" placeholder="https://yourstore.com">
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:16px">
+      <div class="field">
+        <label>Industry / Niche</label>
+        <input type="text" id="brandNiche" placeholder="e.g. Luxury fragrance, Home décor, Fashion">
+      </div>
+      <div class="field">
+        <label>Target Audience</label>
+        <input type="text" id="brandAudience" placeholder="e.g. Women 25–45, interested in luxury beauty">
+      </div>
+    </div>
+
+    <!-- Logo upload -->
+    <div class="field" style="margin-bottom:16px">
+      <label>Brand Logo <span style="color:var(--gray-500);font-weight:400;text-transform:none">(PNG recommended)</span></label>
+      <div class="logo-upload-row">
+        <div class="logo-drop" id="logoDrop" onclick="document.getElementById('logoInput').click()">
+          <input type="file" id="logoInput" accept="image/png,image/svg+xml,image/jpeg" style="display:none">
+          <div id="logoPreviewWrap">
+            <span style="font-size:22px">🏷</span>
+            <span style="font-size:12px;color:var(--gray-500);margin-top:4px">Upload logo</span>
+          </div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <p style="font-size:12px;color:var(--gray-700);line-height:1.6">Upload a PNG with transparent background for best results. Will appear top-left on every creative.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colors -->
+    <div class="row" style="margin-bottom:16px">
+      <div class="field">
+        <label>Primary Brand Color</label>
+        <div class="color-input-row">
+          <input type="color" id="colorPrimary" value="#E63946" class="color-swatch">
+          <input type="text" id="colorPrimaryHex" value="#E63946" placeholder="#E63946" maxlength="7" oninput="syncColor('colorPrimary','colorPrimaryHex')" style="flex:1">
+        </div>
+      </div>
+      <div class="field">
+        <label>Secondary Brand Color</label>
+        <div class="color-input-row">
+          <input type="color" id="colorSecondary" value="#1D3557" class="color-swatch">
+          <input type="text" id="colorSecondaryHex" value="#1D3557" placeholder="#1D3557" maxlength="7" oninput="syncColor('colorSecondary','colorSecondaryHex')" style="flex:1">
+        </div>
+      </div>
+      <div class="field">
+        <label>CTA Button Color</label>
+        <div class="color-input-row">
+          <input type="color" id="colorCta" value="#E63946" class="color-swatch">
+          <input type="text" id="colorCtaHex" value="#E63946" placeholder="#E63946" maxlength="7" oninput="syncColor('colorCta','colorCtaHex')" style="flex:1">
+        </div>
+      </div>
+    </div>
+
+    <!-- Font -->
+    <div class="row" style="margin-bottom:16px">
+      <div class="field">
+        <label>Brand Font <span style="color:var(--gray-500);font-weight:400;text-transform:none">(Google Fonts name or system font)</span></label>
+        <input type="text" id="brandFont" placeholder="e.g. Playfair Display, Helvetica, Montserrat">
+      </div>
+      <div class="field">
+        <label>CTA Font</label>
+        <input type="text" id="ctaFont" placeholder="e.g. DM Sans, Arial, Futura">
+      </div>
+    </div>
+
+    <!-- Campaign goal -->
+    <div class="field">
+      <label>Campaign Goal / What the product helps with</label>
+      <textarea id="campaignGoal" placeholder="e.g. Sell our Miami Shower Gel — a gourmand luxury fragrance. Great for gifting. Target: women 25–45 who love indulgent beauty rituals."></textarea>
+    </div>
+
+    <div style="margin-top:14px;display:flex;align-items:center;gap:10px">
+      <button class="btn-primary" onclick="saveProfile()" id="saveProfileBtn">Save Profile</button>
+      <span id="profileSavedMsg" style="font-size:12px;color:#1a7a4a;display:none">✓ Profile saved</span>
+    </div>
+  </div>
+
+  <!-- STEP 2: Upload Images -->
+  <div class="card">
+    <div class="section-label">
+      <div class="step-num">2</div>
       <div class="section-title" id="step1-title">Upload Images & Assign Funnel Stage</div>
     </div>
     <div class="upload-zone" id="uploadZone">
@@ -193,25 +295,11 @@ textarea{resize:vertical;min-height:75px}
     <div class="images-list" id="imagesList"></div>
   </div>
 
-  <div class="card">
-    <div class="section-label">
-      <div class="step-num">2</div>
-      <div class="section-title" id="step2-title">Brand & Campaign</div>
-    </div>
-    <div class="field" style="margin-bottom:14px">
-      <label id="lbl-url">Website URL <span id="url-hint" style="color:var(--gray-500);font-weight:400;text-transform:none">(optional — auto-pulls brand context)</span></label>
-      <input type="url" id="brandUrl" placeholder="https://yourstore.com">
-    </div>
-    <div class="field">
-      <label id="lbl-goal">Campaign Goal / What the product helps with</label>
-      <textarea id="campaignGoal" placeholder="e.g. Sell our Miami Shower Gel — a gourmand luxury fragrance. Great for gifting. Target: women 25–45 who love indulgent beauty rituals."></textarea>
-    </div>
-  </div>
-
+  <!-- STEP 3: Generate -->
   <div class="card action-row">
     <div>
       <div style="font-size:14px;font-weight:600;color:var(--navy)" id="gen-title">Generate Creatives</div>
-      <div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="gen-sub">5 ad variants per image · copy matched to each image's funnel stage</div>
+      <div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="gen-sub">5 ad variants per image · branded copy · funnel-matched CTA</div>
     </div>
     <button class="btn-primary" id="genBtn" onclick="generateCreatives()"><span id="gen-btn-txt">✦ Generate</span></button>
   </div>
@@ -298,6 +386,94 @@ textarea{resize:vertical;min-height:75px}
 <script>
 const files = [];
 let lastCtx = null;
+let brandProfile = {};
+let logoDataUrl = null;
+
+// ── BRAND PROFILE ──
+function syncColor(colorId, hexId) {
+  const hex = document.getElementById(hexId).value;
+  if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+    document.getElementById(colorId).value = hex;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // sync color pickers → hex inputs
+  ['colorPrimary','colorSecondary','colorCta'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+      document.getElementById(id+'Hex').value = this.value;
+    });
+  });
+
+  // logo upload
+  document.getElementById('logoInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      logoDataUrl = e.target.result;
+      const wrap = document.getElementById('logoPreviewWrap');
+      wrap.innerHTML = `<img src="${logoDataUrl}" style="width:68px;height:68px;object-fit:contain;border-radius:6px;padding:4px">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // load saved profile from localStorage
+  const saved = localStorage.getItem('pindesignr_profile');
+  if (saved) {
+    try {
+      const p = JSON.parse(saved);
+      if (p.brandName) document.getElementById('brandName').value = p.brandName;
+      if (p.brandUrl) document.getElementById('brandUrl').value = p.brandUrl;
+      if (p.brandNiche) document.getElementById('brandNiche').value = p.brandNiche;
+      if (p.brandAudience) document.getElementById('brandAudience').value = p.brandAudience;
+      if (p.campaignGoal) document.getElementById('campaignGoal').value = p.campaignGoal;
+      if (p.colorPrimary) { document.getElementById('colorPrimary').value = p.colorPrimary; document.getElementById('colorPrimaryHex').value = p.colorPrimary; }
+      if (p.colorSecondary) { document.getElementById('colorSecondary').value = p.colorSecondary; document.getElementById('colorSecondaryHex').value = p.colorSecondary; }
+      if (p.colorCta) { document.getElementById('colorCta').value = p.colorCta; document.getElementById('colorCtaHex').value = p.colorCta; }
+      if (p.brandFont) document.getElementById('brandFont').value = p.brandFont;
+      if (p.ctaFont) document.getElementById('ctaFont').value = p.ctaFont;
+      if (p.logoDataUrl) { logoDataUrl = p.logoDataUrl; document.getElementById('logoPreviewWrap').innerHTML = `<img src="${logoDataUrl}" style="width:68px;height:68px;object-fit:contain;border-radius:6px;padding:4px">`; }
+      brandProfile = p;
+    } catch {}
+  }
+});
+
+function saveProfile() {
+  brandProfile = {
+    brandName: document.getElementById('brandName').value.trim(),
+    brandUrl: document.getElementById('brandUrl').value.trim(),
+    brandNiche: document.getElementById('brandNiche').value.trim(),
+    brandAudience: document.getElementById('brandAudience').value.trim(),
+    campaignGoal: document.getElementById('campaignGoal').value.trim(),
+    colorPrimary: document.getElementById('colorPrimaryHex').value.trim(),
+    colorSecondary: document.getElementById('colorSecondaryHex').value.trim(),
+    colorCta: document.getElementById('colorCtaHex').value.trim(),
+    brandFont: document.getElementById('brandFont').value.trim(),
+    ctaFont: document.getElementById('ctaFont').value.trim(),
+    logoDataUrl: logoDataUrl || null
+  };
+  localStorage.setItem('pindesignr_profile', JSON.stringify(brandProfile));
+  const msg = document.getElementById('profileSavedMsg');
+  msg.style.display = 'inline';
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+
+function getProfile() {
+  return {
+    brandName: document.getElementById('brandName').value.trim() || brandProfile.brandName || '',
+    brandUrl: document.getElementById('brandUrl').value.trim() || brandProfile.brandUrl || '',
+    brandNiche: document.getElementById('brandNiche').value.trim() || brandProfile.brandNiche || '',
+    brandAudience: document.getElementById('brandAudience').value.trim() || brandProfile.brandAudience || '',
+    campaignGoal: document.getElementById('campaignGoal').value.trim() || brandProfile.campaignGoal || '',
+    colorPrimary: document.getElementById('colorPrimaryHex').value.trim() || '#E63946',
+    colorSecondary: document.getElementById('colorSecondaryHex').value.trim() || '#1D3557',
+    colorCta: document.getElementById('colorCtaHex').value.trim() || '#E63946',
+    brandFont: document.getElementById('brandFont').value.trim() || 'DM Sans',
+    ctaFont: document.getElementById('ctaFont').value.trim() || 'DM Sans',
+    logoDataUrl: logoDataUrl || brandProfile.logoDataUrl || null
+  };
+}
 
 // ── UI TRANSLATIONS ──
 const T = {
@@ -619,10 +795,12 @@ async function callClaude(messages, system, max = 1200) {
 // ── GENERATE CREATIVES ──
 async function generateCreatives() {
   hideErr('errorBar');
-  const brandUrl = document.getElementById('brandUrl').value.trim();
-  const goal = document.getElementById('campaignGoal').value.trim();
+  const profile = getProfile();
+  const goal = profile.campaignGoal;
+  const funnels = files.map(f => f.funnels).flat();
+
   if (!files.length) return showErr('errorBar','Please upload at least one product image.');
-  if (!goal) return showErr('errorBar','Please describe your campaign goal.');
+  if (!goal) return showErr('errorBar','Please describe your campaign goal in Step 1.');
 
   const btn = document.getElementById('genBtn');
   btn.disabled = true;
@@ -632,10 +810,9 @@ async function generateCreatives() {
   const tr0 = T[document.getElementById('uiLang').value] || T['en'];
   setStat('statusBar', tr0.status_brand);
 
-  let brandCtx = '', brandDisplay = 'Brand';
-  const tr = T[document.getElementById('uiLang').value] || T['en'];
-  if (brandUrl) {
-    setStat('statusBar', tr.status_fetch);
+  let brandCtx = '';
+  if (profile.brandUrl) {
+    setStat('statusBar', tr0.status_fetch);
     setProg(10);
     try {
       const r = await fetch('/api/claude', {
@@ -643,16 +820,13 @@ async function generateCreatives() {
         body: JSON.stringify({
           model:'claude-sonnet-4-20250514', max_tokens:600,
           tools:[{type:'web_search_20250305',name:'web_search'}],
-          messages:[{role:'user',content:`Search and analyse: ${brandUrl}. Extract tone, values, style, tagline, brand name. Return ONLY JSON: {brandName,tone,values,style,tagline}`}]
+          messages:[{role:'user',content:`Search and analyse: ${profile.brandUrl}. Extract tone, values, style, tagline. Return ONLY JSON: {tone,values,style,tagline}`}]
         })
       });
       const d = await r.json();
       const txt = d.content.filter(c => c.type==='text').map(c => c.text).join('');
-      try {
-        const p = parseJ(txt);
-        brandDisplay = p.brandName || brandDisplay;
-        brandCtx = `Brand: ${p.brandName}. Tone: ${p.tone}. Values: ${(p.values||[]).join(', ')}. Style: ${p.style}. Tagline: "${p.tagline}"`;
-      } catch { brandCtx = txt.slice(0,200); }
+      try { const p = parseJ(txt); brandCtx = `Tone: ${p.tone}. Values: ${(p.values||[]).join(', ')}. Style: ${p.style}. Tagline: "${p.tagline}"`; }
+      catch { brandCtx = txt.slice(0,200); }
     } catch {}
   }
 
@@ -662,7 +836,7 @@ async function generateCreatives() {
     lower: 'Lower funnel (Conversion): ready to buy. Urgency + reassurance. CTA: "Shop now", "Buy today".'
   };
 
-  lastCtx = { brandUrl, goal, brandCtx, brandDisplay };
+  lastCtx = { goal, brandCtx, profile };
 
   for (let i = 0; i < files.length; i++) {
     const item = files[i];
@@ -678,25 +852,54 @@ async function generateCreatives() {
     const fCtx = item.funnels.map(f => fDefs[f]).join('\n');
     const prompt = `You are a senior Pinterest ad creative strategist. Analyse this product image and create 5 distinct ad creative concepts.
 
-IMPORTANT: Write ALL copy (headline, subtext, cta, full_copy) in ${pinLang}. This is mandatory.
+IMPORTANT: Write ALL copy in ${pinLang}.
 
+Brand: ${profile.brandName}
+Niche: ${profile.brandNiche}
+Audience: ${profile.brandAudience}
 Campaign goal: ${goal}
-${brandCtx ? brandCtx : ''}
+${brandCtx ? 'Brand context: ' + brandCtx : ''}
+Brand colors: primary ${profile.colorPrimary}, CTA ${profile.colorCta}
+Brand font: ${profile.brandFont}, CTA font: ${profile.ctaFont}
 
 Funnel stages for this image: ${item.funnels.join(', ')}
 ${fCtx}
 
 Rules:
-- ALL text output must be in ${pinLang}
-- Distribute 5 variants across the assigned funnel stages: ${item.funnels.join(', ')}
-- Each variant must have a distinct angle/hook
-- Headlines max 7 words, punchy and aspirational
-- CTA strictly matches funnel stage
-- Pinterest best practices: lifestyle-focused, value-clear, benefit-driven
-- Brand badge top-left is added automatically — do not include brand name in copy
+- ALL text in ${pinLang}
+- Distribute 5 variants across funnel stages: ${item.funnels.join(', ')}
+- Each variant: distinct angle/hook
+- ONE single sentence of copy per creative (no separate headline/subtext) — punchy, lifestyle-focused, aligned to funnel stage
+- CTA: short, matches funnel stage exactly, would use color ${profile.colorCta} and font ${profile.ctaFont}
+- No brand name in copy — logo is placed automatically top-left
+- Pinterest best practices: aspirational, benefit-driven
 
 Return ONLY JSON array of exactly 5:
-[{"variant":"Variant 1 — angle","funnel":"upper|mid|lower","headline":"Short headline in ${pinLang}","subtext":"One benefit sentence in ${pinLang}.","cta":"CTA text in ${pinLang}","full_copy":"Full caption 2-3 sentences in ${pinLang}."}]`;
+[{"variant":"Variant 1 — angle","funnel":"upper|mid|lower","copy":"Single punchy sentence in ${pinLang}.","cta":"CTA text in ${pinLang}","full_copy":"Full post caption 2-3 sentences in ${pinLang}."}]`;
+
+    try {
+      const res = await fetch('/api/claude', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:1200,
+          messages:[{role:'user',content:[
+            {type:'image',source:{type:'base64',media_type:mt,data:b64}},
+            {type:'text',text:prompt}
+          ]}]
+        })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      const variants = parseJ(data.content.map(c => c.text||'').join(''));
+      renderCreatives(item.url, i, variants, profile);
+    } catch(e) { showErr('errorBar',`Error on image ${i+1}: ${e.message}`); }
+  }
+
+  setProg(100);
+  hideStat('statusBar');
+  btn.disabled = false;
+  document.getElementById('chatBar').style.display = 'block';
+}
 
     try {
       const res = await fetch('/api/claude', {
@@ -722,7 +925,7 @@ Return ONLY JSON array of exactly 5:
   document.getElementById('chatBar').style.display = 'block';
 }
 
-function renderCreatives(imgUrl, idx, variants, brandDisplay) {
+function renderCreatives(imgUrl, idx, variants, profile) {
   const results = document.getElementById('results');
   if (!results.querySelector('.results-header')) {
     results.innerHTML = '<div class="results-header">Generated Creatives</div>';
@@ -734,9 +937,12 @@ function renderCreatives(imgUrl, idx, variants, brandDisplay) {
     <div class="creatives-grid" id="cgrid-${idx}"></div>`;
   results.appendChild(block);
   const grid = block.querySelector(`#cgrid-${idx}`);
+
+  const logoEl = profile.logoDataUrl
+    ? `<img src="${profile.logoDataUrl}" style="height:28px;max-width:100px;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))">`
+    : `<div class="brand-pill">${esc(profile.brandName || 'Brand')}</div>`;
+
   variants.forEach(v => {
-    const fc = v.funnel==='upper' ? 'f-upper' : v.funnel==='mid' ? 'f-mid' : 'f-lower';
-    const fl = v.funnel==='upper' ? 'Awareness' : v.funnel==='mid' ? 'Consideration' : 'Conversion';
     const card = document.createElement('div');
     card.className = 'creative-card';
     card.innerHTML = `
@@ -744,18 +950,16 @@ function renderCreatives(imgUrl, idx, variants, brandDisplay) {
         <img class="mockup-bg" src="${imgUrl}">
         <div class="mockup-overlay">
           <div class="mockup-top">
-            <div class="brand-pill">${esc(brandDisplay)}</div>
-            <div class="funnel-pill ${fc}">${fl}</div>
+            <div class="logo-topleft">${logoEl}</div>
           </div>
           <div class="mockup-bottom">
-            <div class="mockup-headline">${esc(v.headline)}</div>
-            <div class="mockup-sub">${esc(v.subtext)}</div>
-            <div class="mockup-cta">${esc(v.cta)} →</div>
+            <div class="mockup-copy" style="font-family:'${esc(profile.brandFont)}',sans-serif">${esc(v.copy)}</div>
+            <div class="mockup-cta" style="background:${esc(profile.colorCta)};font-family:'${esc(profile.ctaFont)}',sans-serif">${esc(v.cta)} →</div>
           </div>
         </div>
       </div>
       <div class="card-meta">
-        <div class="meta-label">${esc(v.variant)}</div>
+        <div class="meta-label">${esc(v.variant)} · <span style="color:${v.funnel==='upper'?'var(--navy)':v.funnel==='mid'?'var(--navy-light)':'var(--red)'}">${v.funnel}</span></div>
         <div class="meta-copy">${esc(v.full_copy)}</div>
         <button class="copy-btn" onclick="copyCaption(this,\`${escJ(v.full_copy)}\`)">Copy caption</button>
       </div>`;
