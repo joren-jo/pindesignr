@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pindesignr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#E63946;--navy:#1D3557;--navy-light:#2a4a73;--red-light:#fdeced;--navy-pale:#eef2f7;--white:#ffffff;--gray-50:#f8f9fa;--gray-100:#f1f3f5;--gray-200:#e9ecef;--gray-300:#dee2e6;--gray-500:#adb5bd;--gray-700:#495057;--gray-900:#212529;--radius:10px;--radius-lg:16px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);--shadow-lg:0 8px 32px rgba(0,0,0,.1)}
+body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray-900);min-height:100vh}
+nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
+.nav-langs{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lang-group{display:flex;align-items:center;gap:6px}
+.lang-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.lang-group select{width:auto;padding:5px 28px 5px 8px;font-size:12px;border-radius:6px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23adb5bd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;appearance:none;-webkit-appearance:none;cursor:pointer}
+.lang-divider{width:1px;height:24px;background:var(--gray-200);margin:0 4px}
+.logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);font-weight:600;letter-spacing:-.02em}
+.logo span{color:var(--red)}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{padding:6px 14px;border-radius:6px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--gray-700);cursor:pointer;transition:all .15s}
+.nav-tab:hover{background:var(--gray-100)}
+.nav-tab.active{background:var(--navy);color:white}
+.page{display:none;padding:32px;max-width:1100px;margin:0 auto}
+.page.active{display:block}
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.step-num{width:24px;height:24px;background:var(--navy);color:white;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title{font-size:13px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.07em}
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+.field{flex:1;min-width:200px}
+label{display:block;font-size:11px;font-weight:600;color:var(--gray-700);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+input[type="text"],input[type="url"],textarea,select{width:100%;background:var(--white);border:1px solid var(--gray-300);border-radius:8px;color:var(--gray-900);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 13px;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(29,53,87,.08)}
+textarea{resize:vertical;min-height:75px}
+
+/* upload */
+.upload-zone{border:1.5px dashed var(--gray-300);border-radius:var(--radius);padding:28px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--gray-50)}
+.upload-zone:hover,.upload-zone.over{border-color:var(--red);background:var(--red-light)}
+.upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:24px;margin-bottom:8px}
+.upload-text{font-size:13px;color:var(--gray-700)}
+.upload-text strong{color:var(--gray-900)}
+
+/* per-image rows */
+.images-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.image-row{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.img-thumb{width:60px;height:60px;border-radius:7px;object-fit:cover;border:1px solid var(--gray-200);flex-shrink:0}
+.img-info{flex:1;min-width:0}
+.img-filename{font-size:12px;font-weight:500;color:var(--gray-900);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.img-funnel-row{display:flex;gap:6px;flex-wrap:wrap}
+.img-funnel-chip{padding:5px 12px;border-radius:100px;border:1.5px solid var(--gray-300);background:white;color:var(--gray-700);font-size:11px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
+.img-funnel-chip:hover{border-color:var(--navy);color:var(--navy)}
+.ifc-upper.active{background:var(--navy);border-color:var(--navy);color:white}
+.ifc-mid.active{background:var(--navy-light);border-color:var(--navy-light);color:white}
+.ifc-lower.active{background:var(--red);border-color:var(--red);color:white}
+.img-remove{width:28px;height:28px;background:transparent;border:1px solid var(--gray-300);border-radius:6px;color:var(--gray-500);font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.img-remove:hover{background:var(--red-light);border-color:var(--red);color:var(--red)}
+
+/* buttons */
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;border:none;border-radius:8px;padding:11px 22px;cursor:pointer;transition:all .15s}
+.btn-primary:hover{background:#c9303c}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.action-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+/* status */
+.status-bar{display:none;align-items:center;gap:10px;background:var(--navy-pale);border:1px solid rgba(29,53,87,.15);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--navy);margin-bottom:20px}
+.status-bar.show{display:flex}
+.spinner{width:14px;height:14px;border:2px solid rgba(29,53,87,.2);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-bar{display:none;background:var(--red-light);border:1px solid rgba(230,57,70,.2);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:20px}
+.error-bar.show{display:block}
+.progress-wrap{background:var(--gray-200);border-radius:100px;height:4px;margin-top:6px;overflow:hidden;width:200px}
+.progress-bar{height:100%;background:var(--red);border-radius:100px;width:0%;transition:width .3s}
+
+/* results */
+.results-header{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px}
+.image-block{margin-bottom:36px}
+.image-block-label{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--gray-700);margin-bottom:14px}
+.image-block-label img{width:32px;height:32px;border-radius:5px;object-fit:cover;border:1px solid var(--gray-200)}
+.creatives-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.creative-card{background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;transition:box-shadow .2s,transform .2s;box-shadow:var(--shadow)}
+.creative-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.mockup{aspect-ratio:2/3;position:relative;overflow:hidden;background:#111}
+.mockup-bg{width:100%;height:100%;object-fit:cover;opacity:.42}
+.mockup-overlay{position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,transparent 40%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.75) 100%)}
+.mockup-top{display:flex;justify-content:space-between;align-items:flex-start}
+.brand-pill{background:rgba(255,255,255,.93);color:var(--navy);font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;letter-spacing:.02em;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.funnel-pill{font-size:9px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:.06em;text-transform:uppercase}
+.f-upper{background:rgba(29,53,87,.85);color:#b8d0e8}
+.f-mid{background:rgba(42,74,115,.85);color:#c8daee}
+.f-lower{background:rgba(230,57,70,.85);color:#ffd0d3}
+.mockup-headline{font-family:'Playfair Display',serif;font-size:15px;font-weight:400;color:white;line-height:1.25;margin-bottom:6px;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.mockup-sub{font-size:10px;color:rgba(255,255,255,.8);line-height:1.4;margin-bottom:9px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.mockup-cta{display:inline-block;background:var(--red);color:white;font-size:10px;font-weight:700;padding:5px 12px;border-radius:100px;letter-spacing:.04em}
+.card-meta{padding:12px 14px;border-top:1px solid var(--gray-100)}
+.meta-label{font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.meta-copy{font-size:12px;color:var(--gray-700);line-height:1.5}
+.copy-btn{margin-top:8px;background:transparent;border:1px solid var(--gray-300);border-radius:6px;color:var(--gray-700);font-size:11px;font-family:'DM Sans',sans-serif;padding:4px 10px;cursor:pointer;transition:all .15s}
+.copy-btn:hover{border-color:var(--navy);color:var(--navy)}
+
+/* chat bar */
+.chat-bar{background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:16px 18px;margin-top:24px;box-shadow:var(--shadow)}
+.chat-bar-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.chat-input-row{display:flex;gap:10px}
+.chat-input-row input{flex:1}
+.suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.suggestion-chip{background:var(--gray-100);border:1px solid var(--gray-200);border-radius:100px;font-size:11px;color:var(--gray-700);padding:4px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.suggestion-chip:hover{background:var(--navy-pale);border-color:var(--navy);color:var(--navy)}
+.edit-indicator{display:none;font-size:11px;color:var(--navy);background:var(--navy-pale);border-radius:6px;padding:4px 10px;margin-top:8px}
+.edit-indicator.show{display:block}
+.edit-log{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.edit-log-item{font-size:12px;padding:7px 12px;border-radius:7px;border:1px solid var(--gray-200);background:var(--gray-50);color:var(--gray-700);display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+.edit-log-item.pending{border-color:rgba(29,53,87,.2);background:var(--navy-pale);color:var(--navy)}
+.edit-log-item.done{border-color:rgba(20,150,80,.2);background:#f0faf5;color:#1a7a4a}
+.edit-log-item.error{border-color:rgba(230,57,70,.2);background:var(--red-light);color:var(--red)}
+.edit-log-icon{flex-shrink:0;font-size:13px}
+.card-highlight{outline:2px solid var(--red);outline-offset:2px;transition:outline .3s}
+
+/* keyword module */
+.kw-intro{background:var(--navy-pale);border:1px solid rgba(29,53,87,.12);border-radius:var(--radius);padding:16px 18px;margin-bottom:20px;font-size:13px;color:var(--navy);line-height:1.6}
+.badge-api{display:inline-block;background:var(--red-light);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle;margin-left:6px}
+.cluster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:20px}
+.cluster-card{background:white;border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.cluster-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cluster-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
+.kw-list{list-style:none}
+.kw-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--gray-100);font-size:12px}
+.kw-item:last-child{border-bottom:none}
+.kw-word{color:var(--gray-900)}
+.kw-vol{font-size:10px;color:var(--gray-500);font-weight:500}
+.boards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:20px}
+.board-card{background:white;border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.board-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.board-desc{font-size:11px;color:var(--gray-700);line-height:1.5;margin-bottom:10px}
+.seed-pin{font-size:11px;color:var(--gray-700);padding:3px 0;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.seed-pin::before{content:'→';color:var(--red);flex-shrink:0;font-size:10px;margin-top:1px}
+.divider{height:1px;background:var(--gray-200);margin:10px 0}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pin<span>designr</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('creatives',this)" id="tab-creatives">Creative Generator</button>
+    <button class="nav-tab" onclick="switchTab('keywords',this)" id="tab-keywords">Keyword Research</button>
+  </div>
+  <div class="nav-langs">
+    <div class="lang-group">
+      <span class="lang-label" id="label-ui-lang">Interface</span>
+      <select id="uiLang" onchange="applyUILang()">
+        <option value="en">🇬🇧 English</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="it">🇮🇹 Italiano</option>
+      </select>
+    </div>
+    <div class="lang-divider"></div>
+    <div class="lang-group">
+      <span class="lang-label" id="label-pin-lang">Pin copy</span>
+      <select id="pinLang">
+        <option value="English">🇬🇧 English</option>
+        <option value="French">🇫🇷 Français</option>
+        <option value="German">🇩🇪 Deutsch</option>
+        <option value="Spanish">🇪🇸 Español</option>
+        <option value="Italian">🇮🇹 Italiano</option>
+        <option value="Portuguese">🇵🇹 Português</option>
+        <option value="Dutch">🇳🇱 Nederlands</option>
+        <option value="Japanese">🇯🇵 日本語</option>
+        <option value="Arabic">🇸🇦 العربية</option>
+      </select>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ CREATIVES ══ -->
+<div class="page active" id="page-creatives">
+
+  <div class="card">
+    <div class="section-label">
+      <div class="step-num">1</div>
+      <div class="section-title" id="step1-title">Upload Images & Assign Funnel Stage</div>
+    </div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <div class="upload-icon">🖼</div>
+      <div class="upload-text" id="upload-text-inner"><strong>Click or drag & drop</strong> up to 5 product images · set funnel stage per image below</div>
+    </div>
+    <div class="images-list" id="imagesList"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">
+      <div class="step-num">2</div>
+      <div class="section-title" id="step2-title">Brand & Campaign</div>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label id="lbl-url">Website URL <span id="url-hint" style="color:var(--gray-500);font-weight:400;text-transform:none">(optional — auto-pulls brand context)</span></label>
+      <input type="url" id="brandUrl" placeholder="https://yourstore.com">
+    </div>
+    <div class="field">
+      <label id="lbl-goal">Campaign Goal / What the product helps with</label>
+      <textarea id="campaignGoal" placeholder="e.g. Sell our Miami Shower Gel — a gourmand luxury fragrance. Great for gifting. Target: women 25–45 who love indulgent beauty rituals."></textarea>
+    </div>
+  </div>
+
+  <div class="card action-row">
+    <div>
+      <div style="font-size:14px;font-weight:600;color:var(--navy)" id="gen-title">Generate Creatives</div>
+      <div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="gen-sub">5 ad variants per image · copy matched to each image's funnel stage</div>
+    </div>
+    <button class="btn-primary" id="genBtn" onclick="generateCreatives()"><span id="gen-btn-txt">✦ Generate</span></button>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="spinner"></div>
+    <div>
+      <div id="statusText">Analysing brand…</div>
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+  </div>
+  <div class="error-bar" id="errorBar"></div>
+
+  <div id="results"></div>
+
+  <div class="chat-bar" id="chatBar" style="display:none">
+    <div class="chat-bar-label" id="chat-bar-label">✏ Modify Creatives</div>
+    <div style="font-size:12px;color:var(--gray-700);margin-bottom:10px;line-height:1.6">
+      <span id="chat-hint-txt">Reference any creative by its ID, then describe the change. You can target multiple creatives in one message — just press Enter to apply.</span>
+      <div style="margin-top:6px;color:var(--gray-500);font-size:11px">
+        <span id="chat-format-txt">Format:</span> <code style="background:var(--gray-100);padding:2px 6px;border-radius:4px;color:var(--navy)">img1-2 more luxurious, img2-4 add urgency to CTA, img1-5 target younger audience</code>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <textarea id="chatInput" rows="2" placeholder="img1-1 make it more luxurious, img1-3 add urgency, img2-2 focus on gifting angle" style="resize:none;line-height:1.5"></textarea>
+      <button class="btn-primary" id="editBtn" onclick="applyEdit()" style="align-self:flex-end"><span id="edit-btn-txt">Apply</span></button>
+    </div>
+    <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+      <span style="font-size:11px;color:var(--gray-500)" id="quick-add-txt">Quick add:</span>
+      <span class="suggestion-chip" id="sug-1" onclick="appendSug('more luxurious')">More luxurious</span>
+      <span class="suggestion-chip" id="sug-2" onclick="appendSug('add urgency to CTA')">Add urgency</span>
+      <span class="suggestion-chip" id="sug-3" onclick="appendSug('shorter and punchier copy')">Shorter copy</span>
+      <span class="suggestion-chip" id="sug-4" onclick="appendSug('target younger audience')">Younger audience</span>
+      <span class="suggestion-chip" id="sug-5" onclick="appendSug('focus on gifting angle')">Gifting angle</span>
+      <span class="suggestion-chip" id="sug-6" onclick="appendSug('warmer tone')">Warmer tone</span>
+    </div>
+    <div class="edit-log" id="editLog"></div>
+  </div>
+
+</div>
+
+<!-- ══ KEYWORDS ══ -->
+<div class="page" id="page-keywords">
+
+  <div class="kw-intro">
+    <strong id="kw-page-title">Pinterest Keyword Research</strong> — <span id="kw-intro-txt">Enter your website URL and niche. We scan your brand, identify your vertical, and surface the top 100 keywords ranked by buying intent — so you know exactly which terms to build pins around to dominate your category.</span>
+  </div>
+
+  <div class="card">
+    <div class="section-label"><div class="step-num">1</div><div class="section-title" id="kw-step1-title">Brand Context</div></div>
+    <div class="row" style="margin-bottom:14px">
+      <div class="field">
+        <label id="lbl-kw-url">Website URL</label>
+        <input type="url" id="kwUrl" placeholder="https://yourstore.com">
+      </div>
+      <div class="field">
+        <label id="lbl-kw-niche">Primary Niche / Category</label>
+        <input type="text" id="kwNiche" placeholder="e.g. Luxury beauty, Home décor, Fashion">
+      </div>
+    </div>
+    <div class="field">
+      <label id="lbl-kw-audience">Target Audience</label>
+      <input type="text" id="kwAudience" placeholder="e.g. Women 25–45, interested in self-care and gifting">
+    </div>
+  </div>
+
+  <div class="card action-row">
+    <div>
+      <div style="font-size:14px;font-weight:600;color:var(--navy)" id="kw-btn-title">Research Keywords</div>
+      <div style="font-size:12px;color:var(--gray-500);margin-top:2px" id="kw-btn-sub">Top 100 keywords · ranked by buying intent · board suggestions · seed pins · paid ad priorities</div>
+    </div>
+    <button class="btn-primary" id="kwBtn" onclick="generateKeywords()"><span id="kw-btn-txt">🔍 Research</span></button>
+  </div>
+
+  <div class="status-bar" id="kwStatusBar">
+    <div class="spinner"></div>
+    <span id="kwStatusText">Scanning website…</span>
+  </div>
+  <div class="error-bar" id="kwErrorBar"></div>
+  <div id="kwResults"></div>
+
+</div>
+
+<script>
+const files = [];
+let lastCtx = null;
+
+// ── UI TRANSLATIONS ──
+const T = {
+  en: {
+    tab_creative: 'Creative Generator', tab_keywords: 'Keyword Research',
+    label_ui: 'Interface', label_pin: 'Pin copy',
+    step1_title: 'Upload Images & Assign Funnel Stage',
+    upload_text: '<strong>Click or drag & drop</strong> up to 5 product images · set funnel stage per image below',
+    step2_title: 'Brand & Campaign',
+    url_label: 'Website URL', url_hint: '(optional — auto-pulls brand context)',
+    goal_label: 'Campaign Goal / What the product helps with',
+    goal_placeholder: 'e.g. Sell our Miami Shower Gel — a gourmand luxury fragrance. Great for gifting. Target: women 25–45 who love indulgent beauty rituals.',
+    gen_title: 'Generate Creatives', gen_sub: '5 ad variants per image · copy matched to each image\'s funnel stage',
+    gen_btn: '✦ Generate',
+    funnel_upper: '🔍 Awareness', funnel_mid: '💡 Consideration', funnel_lower: '🛒 Conversion',
+    results_header: 'Generated Creatives',
+    copy_btn: 'Copy caption', copied: '✓ Copied!',
+    chat_label: '✏ Modify Creatives',
+    chat_hint: 'Reference any creative by its ID, then describe the change. You can target multiple creatives in one message — just press Enter to apply.',
+    chat_format: 'Format:',
+    chat_placeholder: 'img1-1 make it more luxurious, img1-3 add urgency, img2-2 focus on gifting angle',
+    quick_add: 'Quick add:',
+    apply_btn: 'Apply',
+    sug1:'More luxurious', sug2:'Add urgency', sug3:'Shorter copy', sug4:'Younger audience', sug5:'Gifting angle', sug6:'Warmer tone',
+    kw_title: 'Pinterest Keyword Research',
+    kw_intro: 'Enter your website URL and niche. We scan your brand, identify your vertical, and surface the top 100 keywords ranked by buying intent — so you know exactly which terms to build pins around to dominate your category.',
+    kw_step1: 'Brand Context', kw_url: 'Website URL', kw_niche: 'Primary Niche / Category',
+    kw_niche_ph: 'e.g. Luxury beauty, Home décor, Fashion',
+    kw_audience: 'Target Audience', kw_audience_ph: 'e.g. Women 25–45, interested in self-care and gifting',
+    kw_btn_title: 'Research Keywords', kw_btn_sub: 'Top 100 keywords · ranked by buying intent · board suggestions · seed pins · paid ad priorities',
+    kw_btn: '🔍 Research',
+    status_brand: 'Analysing brand context…', status_fetch: 'Fetching brand info from website…',
+    status_gen: (i,t) => `Generating creatives for image ${i} of ${t}…`,
+    status_kw: 'Generating keyword clusters & board strategy…',
+  },
+  fr: {
+    tab_creative: 'Générateur de créas', tab_keywords: 'Recherche de mots-clés',
+    label_ui: 'Interface', label_pin: 'Langue des pins',
+    step1_title: 'Importer les images & choisir l\'étape funnel',
+    upload_text: '<strong>Cliquer ou glisser-déposer</strong> jusqu\'à 5 images produit · choisir l\'étape funnel par image',
+    step2_title: 'Marque & Campagne',
+    url_label: 'URL du site web', url_hint: '(optionnel — extrait le contexte de marque)',
+    goal_label: 'Objectif de campagne / Ce que le produit apporte',
+    goal_placeholder: 'Ex. Vendre notre gel douche Miami — une fragrance gourmande de luxe. Idéal en cadeau. Cible : femmes 25–45 ans qui adorent les rituels beauté.',
+    gen_title: 'Générer les créas', gen_sub: '5 variantes par image · texte adapté à chaque étape funnel',
+    gen_btn: '✦ Générer',
+    funnel_upper: '🔍 Notoriété', funnel_mid: '💡 Considération', funnel_lower: '🛒 Conversion',
+    results_header: 'Créas générées',
+    copy_btn: 'Copier le texte', copied: '✓ Copié !',
+    chat_label: '✏ Modifier les créas',
+    chat_hint: 'Référencez une créa par son ID, puis décrivez la modification. Vous pouvez cibler plusieurs créas en un seul message — appuyez sur Entrée pour appliquer.',
+    chat_format: 'Format :',
+    chat_placeholder: 'img1-1 plus luxueux, img1-3 ajouter urgence, img2-2 angle cadeau',
+    quick_add: 'Ajout rapide :',
+    apply_btn: 'Appliquer',
+    sug1:'Plus luxueux', sug2:'Ajouter urgence', sug3:'Texte plus court', sug4:'Audience plus jeune', sug5:'Angle cadeau', sug6:'Ton plus chaleureux',
+    kw_title: 'Recherche de mots-clés Pinterest',
+    kw_intro: 'Entrez votre URL et votre niche. Nous analysons votre marque et générons les 100 meilleurs mots-clés classés par intention d\'achat — pour savoir exactement sur quels termes créer vos épingles.',
+    kw_step1: 'Contexte de marque', kw_url: 'URL du site web', kw_niche: 'Niche / Catégorie principale',
+    kw_niche_ph: 'Ex. Beauté luxe, Décoration, Mode',
+    kw_audience: 'Audience cible', kw_audience_ph: 'Ex. Femmes 25–45 ans, intéressées par la beauté et les cadeaux',
+    kw_btn_title: 'Rechercher les mots-clés', kw_btn_sub: 'Top 100 · classés par intention d\'achat · suggestions de tableaux · épingles de départ',
+    kw_btn: '🔍 Rechercher',
+    status_brand: 'Analyse du contexte de marque…', status_fetch: 'Récupération des infos du site…',
+    status_gen: (i,t) => `Génération des créas pour l'image ${i} sur ${t}…`,
+    status_kw: 'Génération des clusters et stratégie de tableaux…',
+  },
+  de: {
+    tab_creative: 'Kreativ-Generator', tab_keywords: 'Keyword-Recherche',
+    label_ui: 'Oberfläche', label_pin: 'Pin-Sprache',
+    step1_title: 'Bilder hochladen & Funnel-Stufe wählen',
+    upload_text: '<strong>Klicken oder Drag & Drop</strong> bis zu 5 Produktbilder · Funnel-Stufe pro Bild wählen',
+    step2_title: 'Marke & Kampagne',
+    url_label: 'Website-URL', url_hint: '(optional — liest Markenkontext aus)',
+    goal_label: 'Kampagnenziel / Was das Produkt bietet',
+    goal_placeholder: 'z.B. Unser Miami Duschgel verkaufen — ein luxuriöser Duft. Ideal als Geschenk. Zielgruppe: Frauen 25–45.',
+    gen_title: 'Creatives generieren', gen_sub: '5 Varianten pro Bild · Text passend zur Funnel-Stufe',
+    gen_btn: '✦ Generieren',
+    funnel_upper: '🔍 Bekanntheit', funnel_mid: '💡 Überlegung', funnel_lower: '🛒 Conversion',
+    results_header: 'Generierte Creatives',
+    copy_btn: 'Text kopieren', copied: '✓ Kopiert!',
+    chat_label: '✏ Creatives bearbeiten',
+    chat_hint: 'Referenzieren Sie ein Creative per ID und beschreiben Sie die Änderung. Mehrere Creatives in einer Nachricht möglich — Enter drücken zum Anwenden.',
+    chat_format: 'Format:',
+    chat_placeholder: 'img1-1 luxuriöser, img1-3 Dringlichkeit hinzufügen, img2-2 Geschenk-Fokus',
+    quick_add: 'Schnell hinzufügen:',
+    apply_btn: 'Anwenden',
+    sug1:'Luxuriöser', sug2:'Dringlichkeit', sug3:'Kürzerer Text', sug4:'Jüngere Zielgruppe', sug5:'Geschenk-Fokus', sug6:'Wärmerer Ton',
+    kw_title: 'Pinterest Keyword-Recherche',
+    kw_intro: 'URL und Nische eingeben. Wir analysieren Ihre Marke und liefern die Top 100 Keywords nach Kaufabsicht sortiert.',
+    kw_step1: 'Markenkontext', kw_url: 'Website-URL', kw_niche: 'Hauptnische / Kategorie',
+    kw_niche_ph: 'z.B. Luxus-Beauty, Wohndeko, Mode',
+    kw_audience: 'Zielgruppe', kw_audience_ph: 'z.B. Frauen 25–45, interessiert an Pflege und Geschenken',
+    kw_btn_title: 'Keywords recherchieren', kw_btn_sub: 'Top 100 · nach Kaufabsicht · Board-Vorschläge · Seed-Pins',
+    kw_btn: '🔍 Recherchieren',
+    status_brand: 'Markenkontext analysieren…', status_fetch: 'Website-Infos abrufen…',
+    status_gen: (i,t) => `Creatives für Bild ${i} von ${t} generieren…`,
+    status_kw: 'Keyword-Cluster und Board-Strategie generieren…',
+  },
+  es: {
+    tab_creative: 'Generador de creatividades', tab_keywords: 'Investigación de palabras clave',
+    label_ui: 'Interfaz', label_pin: 'Idioma del pin',
+    step1_title: 'Subir imágenes y asignar etapa de embudo',
+    upload_text: '<strong>Clic o arrastrar y soltar</strong> hasta 5 imágenes de producto · asignar etapa de embudo por imagen',
+    step2_title: 'Marca y Campaña',
+    url_label: 'URL del sitio web', url_hint: '(opcional — extrae contexto de marca)',
+    goal_label: 'Objetivo de campaña / Lo que aporta el producto',
+    goal_placeholder: 'Ej. Vender nuestro gel de ducha Miami — una fragancia gourmet de lujo. Ideal para regalar. Público: mujeres 25–45.',
+    gen_title: 'Generar creatividades', gen_sub: '5 variantes por imagen · texto adaptado a cada etapa',
+    gen_btn: '✦ Generar',
+    funnel_upper: '🔍 Conciencia', funnel_mid: '💡 Consideración', funnel_lower: '🛒 Conversión',
+    results_header: 'Creatividades generadas',
+    copy_btn: 'Copiar texto', copied: '✓ Copiado!',
+    chat_label: '✏ Modificar creatividades',
+    chat_hint: 'Referencia una creatividad por su ID y describe el cambio. Puedes modificar varias a la vez — pulsa Enter para aplicar.',
+    chat_format: 'Formato:',
+    chat_placeholder: 'img1-1 más lujoso, img1-3 añadir urgencia, img2-2 enfoque en regalo',
+    quick_add: 'Añadir rápido:',
+    apply_btn: 'Aplicar',
+    sug1:'Más lujoso', sug2:'Añadir urgencia', sug3:'Texto más corto', sug4:'Público más joven', sug5:'Enfoque regalo', sug6:'Tono más cálido',
+    kw_title: 'Investigación de palabras clave en Pinterest',
+    kw_intro: 'Introduce tu URL y nicho. Analizamos tu marca y generamos las 100 mejores palabras clave ordenadas por intención de compra.',
+    kw_step1: 'Contexto de marca', kw_url: 'URL del sitio web', kw_niche: 'Nicho / Categoría principal',
+    kw_niche_ph: 'Ej. Belleza de lujo, Decoración, Moda',
+    kw_audience: 'Audiencia objetivo', kw_audience_ph: 'Ej. Mujeres 25–45, interesadas en belleza y regalos',
+    kw_btn_title: 'Investigar palabras clave', kw_btn_sub: 'Top 100 · por intención de compra · sugerencias de tableros · pins semilla',
+    kw_btn: '🔍 Investigar',
+    status_brand: 'Analizando contexto de marca…', status_fetch: 'Obteniendo información del sitio…',
+    status_gen: (i,t) => `Generando creatividades para imagen ${i} de ${t}…`,
+    status_kw: 'Generando clusters de palabras clave y estrategia de tableros…',
+  },
+  it: {
+    tab_creative: 'Generatore di creatività', tab_keywords: 'Ricerca parole chiave',
+    label_ui: 'Interfaccia', label_pin: 'Lingua del pin',
+    step1_title: 'Carica immagini e assegna fase funnel',
+    upload_text: '<strong>Clicca o trascina</strong> fino a 5 immagini prodotto · assegna la fase funnel per ogni immagine',
+    step2_title: 'Brand e Campagna',
+    url_label: 'URL del sito web', url_hint: '(opzionale — estrae il contesto del brand)',
+    goal_label: 'Obiettivo campagna / Cosa offre il prodotto',
+    goal_placeholder: 'Es. Vendere il nostro gel doccia Miami — una fragranza gourmet di lusso. Perfetto come regalo. Target: donne 25–45.',
+    gen_title: 'Genera creatività', gen_sub: '5 varianti per immagine · testo adattato a ogni fase funnel',
+    gen_btn: '✦ Genera',
+    funnel_upper: '🔍 Consapevolezza', funnel_mid: '💡 Considerazione', funnel_lower: '🛒 Conversione',
+    results_header: 'Creatività generate',
+    copy_btn: 'Copia testo', copied: '✓ Copiato!',
+    chat_label: '✏ Modifica creatività',
+    chat_hint: 'Fai riferimento a una creatività tramite ID e descrivi la modifica. Puoi modificarne più d\'una in un messaggio — premi Invio per applicare.',
+    chat_format: 'Formato:',
+    chat_placeholder: 'img1-1 più lussuoso, img1-3 aggiungi urgenza, img2-2 focus su regalo',
+    quick_add: 'Aggiunta rapida:',
+    apply_btn: 'Applica',
+    sug1:'Più lussuoso', sug2:'Aggiungi urgenza', sug3:'Testo più breve', sug4:'Pubblico più giovane', sug5:'Focus regalo', sug6:'Tono più caldo',
+    kw_title: 'Ricerca parole chiave Pinterest',
+    kw_intro: 'Inserisci l\'URL e la nicchia. Analizziamo il tuo brand e generiamo le 100 migliori parole chiave ordinate per intenzione di acquisto.',
+    kw_step1: 'Contesto brand', kw_url: 'URL del sito web', kw_niche: 'Nicchia / Categoria principale',
+    kw_niche_ph: 'Es. Bellezza lusso, Arredamento, Moda',
+    kw_audience: 'Pubblico target', kw_audience_ph: 'Es. Donne 25–45, interessate alla cura di sé e ai regali',
+    kw_btn_title: 'Ricerca parole chiave', kw_btn_sub: 'Top 100 · per intenzione d\'acquisto · suggerimenti board · seed pin',
+    kw_btn: '🔍 Ricerca',
+    status_brand: 'Analisi contesto brand…', status_fetch: 'Recupero info dal sito…',
+    status_gen: (i,t) => `Generazione creatività per immagine ${i} di ${t}…`,
+    status_kw: 'Generazione cluster parole chiave e strategia board…',
+  }
+};
+
+function t(key) {
+  const lang = document.getElementById('uiLang')?.value || 'en';
+  return T[lang]?.[key] || T['en'][key] || key;
+}
+
+function applyUILang() {
+  const lang = document.getElementById('uiLang').value;
+  const tr = T[lang] || T['en'];
+
+  // nav
+  document.getElementById('tab-creatives').textContent = tr.tab_creative;
+  document.getElementById('tab-keywords').textContent = tr.tab_keywords;
+  document.getElementById('label-ui-lang').textContent = tr.label_ui;
+  document.getElementById('label-pin-lang').textContent = tr.label_pin;
+
+  // creatives page
+  setTxt('step1-title', tr.step1_title);
+  setHTML('upload-text-inner', tr.upload_text);
+  setTxt('step2-title', tr.step2_title);
+  setLbl('lbl-url', tr.url_label);
+  setTxt('url-hint', tr.url_hint);
+  setLbl('lbl-goal', tr.goal_label);
+  setAttr('campaignGoal', 'placeholder', tr.goal_placeholder);
+  setTxt('gen-title', tr.gen_title);
+  setTxt('gen-sub', tr.gen_sub);
+  setTxt('gen-btn-txt', tr.gen_btn);
+  // funnel chips
+  document.querySelectorAll('.ifc-upper').forEach(el => el.textContent = tr.funnel_upper);
+  document.querySelectorAll('.ifc-mid').forEach(el => el.textContent = tr.funnel_mid);
+  document.querySelectorAll('.ifc-lower').forEach(el => el.textContent = tr.funnel_lower);
+  // chat bar
+  setTxt('chat-bar-label', tr.chat_label);
+  setTxt('chat-hint-txt', tr.chat_hint);
+  setTxt('chat-format-txt', tr.chat_format);
+  setAttr('chatInput', 'placeholder', tr.chat_placeholder);
+  setTxt('quick-add-txt', tr.quick_add);
+  setTxt('edit-btn-txt', tr.apply_btn);
+  setTxt('sug-1', tr.sug1); setTxt('sug-2', tr.sug2); setTxt('sug-3', tr.sug3);
+  setTxt('sug-4', tr.sug4); setTxt('sug-5', tr.sug5); setTxt('sug-6', tr.sug6);
+
+  // keywords page
+  setTxt('kw-page-title', tr.kw_title);
+  setTxt('kw-intro-txt', tr.kw_intro);
+  setTxt('kw-step1-title', tr.kw_step1);
+  setLbl('lbl-kw-url', tr.kw_url);
+  setLbl('lbl-kw-niche', tr.kw_niche);
+  setAttr('kwNiche', 'placeholder', tr.kw_niche_ph);
+  setLbl('lbl-kw-audience', tr.kw_audience);
+  setAttr('kwAudience', 'placeholder', tr.kw_audience_ph);
+  setTxt('kw-btn-title', tr.kw_btn_title);
+  setTxt('kw-btn-sub', tr.kw_btn_sub);
+  setTxt('kw-btn-txt', tr.kw_btn);
+
+  // re-render image list to update funnel chip labels
+  renderList();
+}
+
+function setTxt(id, val) { const el = document.getElementById(id); if(el && val) el.textContent = val; }
+function setHTML(id, val) { const el = document.getElementById(id); if(el && val) el.innerHTML = val; }
+function setLbl(id, val) { const el = document.getElementById(id); if(el && val) el.textContent = val; }
+function setAttr(id, attr, val) { const el = document.getElementById(id); if(el && val) el.setAttribute(attr, val); }
+
+function getPinLang() { return document.getElementById('pinLang')?.value || 'English'; }
+
+// ── UPLOAD ──
+const zone = document.getElementById('uploadZone');
+const fi = document.getElementById('fileInput');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('over'); addFiles(e.dataTransfer.files); });
+fi.addEventListener('change', () => { addFiles(fi.files); fi.value = ''; });
+
+function addFiles(list) {
+  const slots = 5 - files.length;
+  Array.from(list).slice(0, slots).forEach(f => {
+    if (!f.type.startsWith('image/')) return;
+    files.push({ file: f, url: URL.createObjectURL(f), funnels: ['upper'] });
+  });
+  renderList();
+}
+
+function removeFile(i) { files.splice(i, 1); renderList(); }
+
+function toggleFunnel(i, funnel) {
+  const item = files[i];
+  const pos = item.funnels.indexOf(funnel);
+  if (pos === -1) {
+    item.funnels.push(funnel);
+  } else {
+    if (item.funnels.length === 1) return;
+    item.funnels.splice(pos, 1);
+  }
+  renderList();
+}
+
+function renderList() {
+  const list = document.getElementById('imagesList');
+  if (!files.length) { list.innerHTML = ''; return; }
+  list.innerHTML = files.map((item, i) => {
+    const name = item.file.name.length > 30 ? item.file.name.slice(0, 27) + '…' : item.file.name;
+    const chips = [
+      { key: 'upper', label: '🔍 Awareness', cls: 'ifc-upper' },
+      { key: 'mid',   label: '💡 Consideration', cls: 'ifc-mid' },
+      { key: 'lower', label: '🛒 Conversion', cls: 'ifc-lower' }
+    ].map(fc => {
+      const a = item.funnels.includes(fc.key) ? ' active' : '';
+      return `<button class="img-funnel-chip ${fc.cls}${a}" onclick="toggleFunnel(${i},'${fc.key}')">${fc.label}</button>`;
+    }).join('');
+    return `
+      <div class="image-row">
+        <img class="img-thumb" src="${item.url}">
+        <div class="img-info">
+          <div class="img-filename">${esc(name)}</div>
+          <div class="img-funnel-row">${chips}</div>
+        </div>
+        <button class="img-remove" onclick="removeFile(${i})">×</button>
+      </div>`;
+  }).join('');
+}
+
+// ── UTILS ──
+function toB64(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
+}
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escJ(s) { return (s||'').replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$'); }
+function parseJ(raw) {
+  const c = raw.replace(/```json|```/g,'').trim();
+  const s = c.indexOf('[') !== -1 ? c.indexOf('[') : c.indexOf('{');
+  const e = c.lastIndexOf(']') !== -1 ? c.lastIndexOf(']') : c.lastIndexOf('}');
+  return JSON.parse(c.substring(s, e+1));
+}
+function setStat(id, msg) {
+  document.getElementById(id).classList.add('show');
+  const t = id === 'statusBar' ? 'statusText' : 'kwStatusText';
+  document.getElementById(t).textContent = msg;
+}
+function hideStat(id) { document.getElementById(id).classList.remove('show'); }
+function showErr(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.classList.add('show'); }
+function hideErr(id) { document.getElementById(id).classList.remove('show'); }
+function setProg(p) { const b = document.getElementById('progressBar'); if(b) b.style.width = p+'%'; }
+
+async function callClaude(messages, system, max = 1200) {
+  const body = { model:'claude-sonnet-4-20250514', max_tokens: max, messages };
+  if (system) body.system = system;
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+  });
+  const d = await r.json();
+  if (d.error) throw new Error(d.error.message);
+  return d.content.map(c => c.text||'').join('');
+}
+
+// ── GENERATE CREATIVES ──
+async function generateCreatives() {
+  hideErr('errorBar');
+  const brandUrl = document.getElementById('brandUrl').value.trim();
+  const goal = document.getElementById('campaignGoal').value.trim();
+  if (!files.length) return showErr('errorBar','Please upload at least one product image.');
+  if (!goal) return showErr('errorBar','Please describe your campaign goal.');
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('chatBar').style.display = 'none';
+  setProg(0);
+  const tr0 = T[document.getElementById('uiLang').value] || T['en'];
+  setStat('statusBar', tr0.status_brand);
+
+  let brandCtx = '', brandDisplay = 'Brand';
+  const tr = T[document.getElementById('uiLang').value] || T['en'];
+  if (brandUrl) {
+    setStat('statusBar', tr.status_fetch);
+    setProg(10);
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:600,
+          tools:[{type:'web_search_20250305',name:'web_search'}],
+          messages:[{role:'user',content:`Search and analyse: ${brandUrl}. Extract tone, values, style, tagline, brand name. Return ONLY JSON: {brandName,tone,values,style,tagline}`}]
+        })
+      });
+      const d = await r.json();
+      const txt = d.content.filter(c => c.type==='text').map(c => c.text).join('');
+      try {
+        const p = parseJ(txt);
+        brandDisplay = p.brandName || brandDisplay;
+        brandCtx = `Brand: ${p.brandName}. Tone: ${p.tone}. Values: ${(p.values||[]).join(', ')}. Style: ${p.style}. Tagline: "${p.tagline}"`;
+      } catch { brandCtx = txt.slice(0,200); }
+    } catch {}
+  }
+
+  const fDefs = {
+    upper: 'Upper funnel (Awareness): first-time exposure. Emotion-first, lifestyle. Soft CTA: "Discover", "Explore".',
+    mid:   'Mid funnel (Consideration): comparing options. Benefit-led. CTA: "See why", "Learn more".',
+    lower: 'Lower funnel (Conversion): ready to buy. Urgency + reassurance. CTA: "Shop now", "Buy today".'
+  };
+
+  lastCtx = { brandUrl, goal, brandCtx, brandDisplay };
+
+  for (let i = 0; i < files.length; i++) {
+    const item = files[i];
+    const tr = T[document.getElementById('uiLang').value] || T['en'];
+    setStat('statusBar', tr.status_gen(i+1, files.length));
+    setProg(20 + (i / files.length) * 75);
+
+    let b64, mt;
+    try { b64 = await toB64(item.file); mt = item.file.type || 'image/jpeg'; }
+    catch { showErr('errorBar',`Could not read image ${i+1}`); continue; }
+
+    const pinLang = getPinLang();
+    const fCtx = item.funnels.map(f => fDefs[f]).join('\n');
+    const prompt = `You are a senior Pinterest ad creative strategist. Analyse this product image and create 5 distinct ad creative concepts.
+
+IMPORTANT: Write ALL copy (headline, subtext, cta, full_copy) in ${pinLang}. This is mandatory.
+
+Campaign goal: ${goal}
+${brandCtx ? brandCtx : ''}
+
+Funnel stages for this image: ${item.funnels.join(', ')}
+${fCtx}
+
+Rules:
+- ALL text output must be in ${pinLang}
+- Distribute 5 variants across the assigned funnel stages: ${item.funnels.join(', ')}
+- Each variant must have a distinct angle/hook
+- Headlines max 7 words, punchy and aspirational
+- CTA strictly matches funnel stage
+- Pinterest best practices: lifestyle-focused, value-clear, benefit-driven
+- Brand badge top-left is added automatically — do not include brand name in copy
+
+Return ONLY JSON array of exactly 5:
+[{"variant":"Variant 1 — angle","funnel":"upper|mid|lower","headline":"Short headline in ${pinLang}","subtext":"One benefit sentence in ${pinLang}.","cta":"CTA text in ${pinLang}","full_copy":"Full caption 2-3 sentences in ${pinLang}."}]`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:1200,
+          messages:[{role:'user',content:[
+            {type:'image',source:{type:'base64',media_type:mt,data:b64}},
+            {type:'text',text:prompt}
+          ]}]
+        })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      const variants = parseJ(data.content.map(c => c.text||'').join(''));
+      renderCreatives(item.url, i, variants, brandDisplay);
+    } catch(e) { showErr('errorBar',`Error on image ${i+1}: ${e.message}`); }
+  }
+
+  setProg(100);
+  hideStat('statusBar');
+  btn.disabled = false;
+  document.getElementById('chatBar').style.display = 'block';
+}
+
+function renderCreatives(imgUrl, idx, variants, brandDisplay) {
+  const results = document.getElementById('results');
+  if (!results.querySelector('.results-header')) {
+    results.innerHTML = '<div class="results-header">Generated Creatives</div>';
+  }
+  const block = document.createElement('div');
+  block.className = 'image-block';
+  block.innerHTML = `
+    <div class="image-block-label"><img src="${imgUrl}"> Image ${idx+1} · ${variants.length} variants</div>
+    <div class="creatives-grid" id="cgrid-${idx}"></div>`;
+  results.appendChild(block);
+  const grid = block.querySelector(`#cgrid-${idx}`);
+  variants.forEach(v => {
+    const fc = v.funnel==='upper' ? 'f-upper' : v.funnel==='mid' ? 'f-mid' : 'f-lower';
+    const fl = v.funnel==='upper' ? 'Awareness' : v.funnel==='mid' ? 'Consideration' : 'Conversion';
+    const card = document.createElement('div');
+    card.className = 'creative-card';
+    card.innerHTML = `
+      <div class="mockup">
+        <img class="mockup-bg" src="${imgUrl}">
+        <div class="mockup-overlay">
+          <div class="mockup-top">
+            <div class="brand-pill">${esc(brandDisplay)}</div>
+            <div class="funnel-pill ${fc}">${fl}</div>
+          </div>
+          <div class="mockup-bottom">
+            <div class="mockup-headline">${esc(v.headline)}</div>
+            <div class="mockup-sub">${esc(v.subtext)}</div>
+            <div class="mockup-cta">${esc(v.cta)} →</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="meta-label">${esc(v.variant)}</div>
+        <div class="meta-copy">${esc(v.full_copy)}</div>
+        <button class="copy-btn" onclick="copyCaption(this,\`${escJ(v.full_copy)}\`)">Copy caption</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ── CHAT EDIT ──
+// Enter key submits
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && document.activeElement.id === 'chatInput') {
+    e.preventDefault();
+    applyEdit();
+  }
+});
+
+function appendSug(text) {
+  const ta = document.getElementById('chatInput');
+  const cur = ta.value.trim();
+  // find last img reference and append to it, or start a new one
+  if (cur === '') {
+    ta.value = text + ' ';
+  } else {
+    ta.value = cur + ', ' + text + ' ';
+  }
+  ta.focus();
+}
+
+// Parse input like: "img1-2 more luxurious, img2-4 add urgency, img1-3 gifting"
+// Returns [{imgIdx:0, varIdx:1, instruction:'more luxurious'}, ...]
+function parseEditCommands(raw) {
+  const cmds = [];
+  // Split by comma but keep the img references together with their instructions
+  // Pattern: img{N}-{M} followed by text until next img reference or end
+  const pattern = /img\s*(\d+)\s*[-–]\s*(\d+)\s+([^,]+(?:,(?!\s*img\s*\d+\s*[-–])[^,]*)*)/gi;
+  let match;
+  while ((match = pattern.exec(raw)) !== null) {
+    const imgIdx = parseInt(match[1]) - 1; // 0-based
+    const varIdx = parseInt(match[2]) - 1; // 0-based
+    const instruction = match[3].trim().replace(/,\s*$/, '').trim();
+    if (instruction) cmds.push({ imgIdx, varIdx, instruction });
+  }
+  return cmds;
+}
+
+function getCardEl(imgIdx, varIdx) {
+  const grid = document.getElementById(`cgrid-${imgIdx}`);
+  if (!grid) return null;
+  const cards = grid.querySelectorAll('.creative-card');
+  return cards[varIdx] || null;
+}
+
+function updateCard(card, v) {
+  const fc = v.funnel==='upper'?'f-upper':v.funnel==='mid'?'f-mid':'f-lower';
+  const fl = v.funnel==='upper'?'Awareness':v.funnel==='mid'?'Consideration':'Conversion';
+  card.querySelector('.funnel-pill').className = `funnel-pill ${fc}`;
+  card.querySelector('.funnel-pill').textContent = fl;
+  card.querySelector('.mockup-headline').textContent = v.headline;
+  card.querySelector('.mockup-sub').textContent = v.subtext;
+  card.querySelector('.mockup-cta').textContent = v.cta + ' →';
+  card.querySelector('.meta-label').textContent = v.variant;
+  card.querySelector('.meta-copy').textContent = v.full_copy;
+  const cb = card.querySelector('.copy-btn');
+  cb.onclick = () => copyCaption(cb, v.full_copy);
+}
+
+function addLogItem(id, icon, msg, state) {
+  const log = document.getElementById('editLog');
+  let item = document.getElementById('log-' + id);
+  if (!item) {
+    item = document.createElement('div');
+    item.id = 'log-' + id;
+    item.className = 'edit-log-item';
+    log.appendChild(item);
+  }
+  item.className = `edit-log-item ${state}`;
+  item.innerHTML = `<span class="edit-log-icon">${icon}</span><span>${msg}</span>`;
+}
+
+async function applyEdit() {
+  const raw = document.getElementById('chatInput').value.trim();
+  if (!raw || !lastCtx) return;
+
+  const cmds = parseEditCommands(raw);
+  if (!cmds.length) {
+    addLogItem('parse-err', '⚠️', 'Could not parse any image references. Use format: <strong>img1-2 your modification</strong>', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('editBtn');
+  btn.disabled = true; btn.textContent = '…';
+
+  // Validate all references first
+  const validated = [];
+  for (const cmd of cmds) {
+    const card = getCardEl(cmd.imgIdx, cmd.varIdx);
+    if (!card) {
+      addLogItem(`err-${cmd.imgIdx}-${cmd.varIdx}`, '❌',
+        `img${cmd.imgIdx+1}-${cmd.varIdx+1} not found — check your image and variant numbers`, 'error');
+    } else {
+      validated.push({ ...cmd, card });
+    }
+  }
+
+  // Group by card to batch per-card (each card needs its own API call since copy is specific)
+  // But run them in parallel for speed
+  const fDefs = { upper:'Upper funnel — CTA: Discover, Explore.', mid:'Mid funnel — CTA: Learn more, See why.', lower:'Lower funnel — CTA: Shop now, Buy today.' };
+
+  const promises = validated.map(async (cmd) => {
+    const logId = `edit-${cmd.imgIdx}-${cmd.varIdx}`;
+    addLogItem(logId, '⏳', `img${cmd.imgIdx+1}-${cmd.varIdx+1} — applying: "<em>${esc(cmd.instruction)}</em>"…`, 'pending');
+
+    // highlight card
+    cmd.card.classList.add('card-highlight');
+
+    // get current copy context from card
+    const currentHeadline = cmd.card.querySelector('.mockup-headline').textContent;
+    const currentCopy = cmd.card.querySelector('.meta-copy').textContent;
+    const currentFunnel = cmd.card.querySelector('.meta-label').textContent;
+
+    const imgFunnels = files[cmd.imgIdx] ? files[cmd.imgIdx].funnels : ['upper'];
+    const fCtx = imgFunnels.map(f => fDefs[f]).join(' | ');
+
+    const pinLang = getPinLang();
+    const prompt = `You are a Pinterest ad creative strategist. Modify this specific ad creative based on the instruction.
+
+IMPORTANT: Write ALL copy in ${pinLang}. This is mandatory.
+
+Current creative:
+- Headline: "${currentHeadline}"
+- Copy: "${currentCopy}"
+- Variant: "${currentFunnel}"
+
+Campaign context: ${lastCtx.goal}
+${lastCtx.brandCtx||''}
+Funnel context: ${fCtx}
+
+Modification instruction: "${cmd.instruction}"
+
+Keep the same funnel stage unless the instruction explicitly changes it.
+All output text must be in ${pinLang}.
+Return ONLY a single JSON object:
+{"variant":"updated variant name","funnel":"upper|mid|lower","headline":"New headline in ${pinLang}","subtext":"New subtext in ${pinLang}.","cta":"CTA in ${pinLang}","full_copy":"New full caption in ${pinLang}."}`;
+
+    try {
+      const raw = await callClaude([{role:'user',content:prompt}]);
+      const v = parseJ(raw);
+      updateCard(cmd.card, v);
+      cmd.card.classList.remove('card-highlight');
+      addLogItem(logId, '✅', `img${cmd.imgIdx+1}-${cmd.varIdx+1} — updated: "<em>${esc(cmd.instruction)}</em>"`, 'done');
+      // scroll card into view
+      cmd.card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    } catch(e) {
+      cmd.card.classList.remove('card-highlight');
+      addLogItem(logId, '❌', `img${cmd.imgIdx+1}-${cmd.varIdx+1} — error: ${e.message}`, 'error');
+    }
+  });
+
+  await Promise.all(promises);
+
+  btn.disabled = false; btn.textContent = 'Apply';
+  document.getElementById('chatInput').value = '';
+}
+
+async function copyCaption(btn, text) {
+  await navigator.clipboard.writeText(text).catch(()=>{});
+  btn.textContent = '✓ Copied!';
+  setTimeout(() => btn.textContent = 'Copy caption', 2000);
+}
+
+// ── KEYWORDS ──
+async function generateKeywords() {
+  hideErr('kwErrorBar');
+  const url = document.getElementById('kwUrl').value.trim();
+  const niche = document.getElementById('kwNiche').value.trim();
+  const audience = document.getElementById('kwAudience').value.trim();
+  if (!url && !niche) return showErr('kwErrorBar','Please enter a website URL or niche.');
+
+  const btn = document.getElementById('kwBtn');
+  btn.disabled = true;
+  document.getElementById('kwResults').innerHTML = '';
+  setStat('kwStatusBar','Scanning website…');
+
+  let brandInfo = '';
+  if (url) {
+    try {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:600,
+          tools:[{type:'web_search_20250305',name:'web_search'}],
+          messages:[{role:'user',content:`Search and analyse ${url}. Products, niche, style, positioning. Return compact JSON: {brand,products,niche,positioning,style}`}]
+        })
+      });
+      const d = await r.json();
+      brandInfo = d.content.filter(c=>c.type==='text').map(c=>c.text).join('').slice(0,400);
+    } catch {}
+  }
+
+  setStat('kwStatusBar','Generating keyword clusters & board strategy…');
+
+  const prompt = `You are a Pinterest SEO and paid media expert. Generate a comprehensive keyword strategy with exactly 100 keywords.
+
+Website: ${url||'not provided'}
+Niche: ${niche||'inferred from website'}
+Audience: ${audience||'general'}
+Brand context: ${brandInfo||'based on niche'}
+
+Generate:
+1. Exactly 100 keywords total, organised into 8-10 thematic clusters
+2. For each keyword score TWO things:
+   - "vol": estimated monthly search volume bracket: "100k+", "10k-100k", "1k-10k", "<1k"
+   - "intent": buying intent score 1-10 (10 = strongest purchase intent, 1 = purely informational)
+3. Sort ALL keywords within each cluster by intent score descending (highest first)
+4. 5 Pinterest board ideas: name + SEO-optimised description + 5 seed pin ideas each
+5. Top 10 keywords for paid Pinterest ads — highest intent score + high volume only
+
+Return ONLY this JSON (no markdown, no explanation):
+{"clusters":[{"name":"Cluster name","keywords":[{"kw":"keyword","vol":"10k-100k","intent":8}]}],"boards":[{"name":"Board Name","desc":"SEO description max 500 chars","seeds":["Pin idea 1","Pin idea 2","Pin idea 3","Pin idea 4","Pin idea 5"]}],"paid_priorities":[{"kw":"keyword","vol":"10k-100k","intent":9}]}`;
+
+  try {
+    const raw = await callClaude([{role:'user',content:prompt}], null, 3000);
+    const data = parseJ(raw);
+    // sort each cluster by intent desc
+    (data.clusters||[]).forEach(c => {
+      c.keywords.sort((a,b) => (b.intent||0) - (a.intent||0));
+    });
+    renderKeywords(data, niche||url);
+  } catch(e) { showErr('kwErrorBar',`Error: ${e.message}`); }
+
+  hideStat('kwStatusBar');
+  btn.disabled = false;
+}
+
+function intentColor(score) {
+  if (score >= 8) return 'var(--red)';
+  if (score >= 5) return '#e68a3a';
+  return 'var(--gray-500)';
+}
+
+function intentLabel(score) {
+  if (score >= 8) return 'High';
+  if (score >= 5) return 'Medium';
+  return 'Low';
+}
+
+function renderKeywords(data, label) {
+  const totalKw = (data.clusters||[]).reduce((a,c)=>a+(c.keywords||[]).length,0);
+  document.getElementById('kwResults').innerHTML = `
+    <div class="results-header">Top ${totalKw} Keywords by Buying Intent — ${esc(label)}</div>
+
+    <div class="card">
+      <div class="section-label"><div class="step-num" style="background:var(--red)">★</div><div class="section-title">Top 10 Paid Ad Priorities</div></div>
+      <p style="font-size:13px;color:var(--gray-700);margin-bottom:14px">Highest buying intent + strongest search volume. Put your Pinterest Ads budget here first.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${(data.paid_priorities||[]).map((k,i) => {
+          const kw = typeof k === 'object' ? k : {kw:k, vol:'', intent:''};
+          const score = kw.intent || 0;
+          const barW = score ? Math.round(score * 10) : 80;
+          return `
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
+            <span style="font-size:11px;font-weight:700;color:var(--gray-500);width:18px;text-align:right">${i+1}</span>
+            <span style="font-size:13px;font-weight:500;color:var(--gray-900);flex:1">${esc(kw.kw)}</span>
+            ${kw.vol ? `<span style="font-size:11px;color:var(--gray-500);white-space:nowrap">${esc(kw.vol)}</span>` : ''}
+            ${score ? `<div style="display:flex;align-items:center;gap:6px">
+              <div style="width:60px;height:4px;background:var(--gray-200);border-radius:2px;overflow:hidden">
+                <div style="width:${barW}%;height:100%;background:${intentColor(score)};border-radius:2px"></div>
+              </div>
+              <span style="font-size:10px;font-weight:700;color:${intentColor(score)};min-width:32px">${intentLabel(score)}</span>
+            </div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label"><div class="step-num">K</div><div class="section-title">All ${totalKw} Keywords · Ranked by Buying Intent</div></div>
+      <p style="font-size:13px;color:var(--gray-700);margin-bottom:16px">Organised by theme, sorted highest intent first within each cluster.</p>
+      <div class="cluster-grid">
+        ${(data.clusters||[]).map(c=>`
+          <div class="cluster-card">
+            <div class="cluster-name"><div class="cluster-dot"></div>${esc(c.name)}</div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:0 2px">
+              <span>Keyword</span><span>Volume · Intent</span>
+            </div>
+            <ul class="kw-list">
+              ${(c.keywords||[]).map(k=>`
+                <li class="kw-item">
+                  <span class="kw-word">${esc(k.kw)}</span>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    ${k.vol ? `<span class="kw-vol">${esc(k.vol)}</span>` : ''}
+                    ${k.intent ? `<div style="display:flex;align-items:center;gap:4px">
+                      <div style="width:28px;height:3px;background:var(--gray-200);border-radius:2px;overflow:hidden">
+                        <div style="width:${Math.round(k.intent*10)}%;height:100%;background:${intentColor(k.intent)};border-radius:2px"></div>
+                      </div>
+                      <span style="font-size:10px;font-weight:600;color:${intentColor(k.intent)}">${k.intent}</span>
+                    </div>` : ''}
+                  </div>
+                </li>`).join('')}
+            </ul>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label"><div class="step-num">B</div><div class="section-title">Pinterest Board Strategy</div></div>
+      <div class="boards-grid">
+        ${(data.boards||[]).map(b=>`
+          <div class="board-card">
+            <div class="board-name">📌 ${esc(b.name)}</div>
+            <div class="board-desc">${esc(b.desc)}</div>
+            <div class="divider"></div>
+            <div style="font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Seed Pin Ideas</div>
+            ${(b.seeds||[]).map(s=>`<div class="seed-pin">${esc(s)}</div>`).join('')}
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>
