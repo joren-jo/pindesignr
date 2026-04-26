@@ -446,7 +446,8 @@ textarea{resize:vertical;min-height:75px}
 
 </div>
 
-<script type="module">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
 const files = [];
 let lastCtx = null;
 let brandProfile = {};
@@ -460,17 +461,15 @@ let supabase = null;
 let currentUser = null;
 
 async function initSupabase() {
-  // safety timeout — never hang on loading screen more than 5s
   const timeout = setTimeout(() => {
     document.getElementById('pageBlock').style.display = 'none';
     document.getElementById('authOverlay').classList.remove('hidden');
   }, 5000);
 
   try {
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     const r = await fetch('/api/config');
     const cfg = await r.json();
-    supabase = createClient(SUPA_URL, cfg.supabaseKey);
+    supabase = window.supabase.createClient(SUPA_URL, cfg.supabaseKey);
 
     const { data: { session } } = await supabase.auth.getSession();
 
@@ -711,6 +710,13 @@ function showPaywall(used, limit) {
     </div>`;
   document.body.appendChild(modal);
 }
+function switchTab(tab, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  el.classList.add('active');
+}
+
 function syncColor(colorId, hexId) {
   const hex = document.getElementById(hexId).value;
   if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
@@ -760,7 +766,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-function saveProfile() {
+async function saveProfile() {
   brandProfile = {
     brandName: document.getElementById('brandName').value.trim(),
     brandUrl: document.getElementById('brandUrl').value.trim(),
